@@ -50,11 +50,15 @@ html, body, [class*="css"] {
     font-weight: 500 !important;
 }
 
-[data-testid="stSidebar"] input[type="number"] {
+[data-testid="stSidebar"] input[type="number"],
+[data-testid="stSidebar"] input {
     color: #f5f0e8 !important;
+    -webkit-text-fill-color: #f5f0e8 !important;
     font-family: 'DM Sans', sans-serif !important;
-    background: rgba(255,255,255,0.07) !important;
-    border: 1px solid rgba(184, 164, 138, 0.25) !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(184, 164, 138, 0.3) !important;
     border-radius: 8px !important;
 }
 
@@ -383,7 +387,7 @@ bars = [
     ("Years of Experience", years_experience, 50,  "#c4622d", f"{years_experience} / 50 yrs"),
     ("Technical Score",     technical_score,  100, "#8b6d38", f"{technical_score} / 100"),
     ("Interview Score",     interview_score,  10,  "#c4a45a", f"{interview_score} / 10"),
-    ("Certifications",      certifications,   20,  "#2c1f14", f"{certifications} / 20"),
+    ("Certifications",      certifications,   20,  "#7a9660", f"{certifications} / 20"),
 ]
 for label, val, mx, color, display in bars:
     pct = int(val / mx * 100)
