@@ -383,7 +383,7 @@ bars = [
     ("Years of Experience", years_experience, 50,  "#c4622d", f"{years_experience} / 50 yrs"),
     ("Technical Score",     technical_score,  100, "#8b6d38", f"{technical_score} / 100"),
     ("Interview Score",     interview_score,  10,  "#c4a45a", f"{interview_score} / 10"),
-    ("Certifications",      certifications,   20,  "#7a9660", f"{certifications} / 20"),
+    ("Certifications",      certifications,   20,  "#2c1f14", f"{certifications} / 20"),
 ]
 for label, val, mx, color, display in bars:
     pct = int(val / mx * 100)
