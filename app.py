@@ -120,7 +120,9 @@ html, body, [class*="css"] {
     text-transform: uppercase !important;
     font-weight: 500 !important;
 }
-[data-testid="stMetricValue"] {
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] > div,
+[data-testid="stMetricValue"] span {
     color: #2c1f14 !important;
     font-family: 'Playfair Display', serif !important;
     font-size: 2rem !important;
