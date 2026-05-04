@@ -3,343 +3,309 @@ import joblib
 import numpy as np
 import os
 
-st.set_page_config(page_title="TalentIQ · HR Intelligence", page_icon="⬡", layout="wide")
+st.set_page_config(page_title="Meridian HR · Hiring Suite", page_icon="🌿", layout="wide")
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ─── GLOBAL RESET & BASE ─────────────────────────────────────────── */
+/* ─── BASE ─────────────────────────────────────────────────────── */
 html, body, [class*="css"] {
-    font-family: 'Syne', sans-serif !important;
+    font-family: 'DM Sans', sans-serif !important;
 }
 
 .stApp {
-    background-color: #080c14;
+    background-color: #f5f0e8;
     background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 180, 255, 0.08) 0%, transparent 60%),
-        repeating-linear-gradient(
-            0deg, transparent, transparent 39px,
-            rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px
-        ),
-        repeating-linear-gradient(
-            90deg, transparent, transparent 39px,
-            rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px
-        );
-    color: #e2e8f0;
+        radial-gradient(ellipse 70% 40% at 80% 10%, rgba(196, 98, 45, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(139, 109, 56, 0.07) 0%, transparent 55%);
+    color: #2c1f14;
 }
 
-/* ─── HIDE STREAMLIT CHROME ──────────────────────────────────────── */
+/* ─── HIDE DEFAULT CHROME ──────────────────────────────────────── */
 #MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 2.5rem 3rem 4rem 3rem !important; max-width: 1400px; }
-
-/* ─── SIDEBAR ─────────────────────────────────────────────────────── */
-[data-testid="stSidebar"] {
-    background-color: #0b1120 !important;
-    border-right: 1px solid rgba(0, 200, 255, 0.12) !important;
-    padding-top: 0 !important;
+.block-container {
+    padding: 2.5rem 3.5rem 4rem 3.5rem !important;
+    max-width: 1300px;
 }
 
-[data-testid="stSidebar"]::before {
-    content: '';
-    display: block;
-    height: 4px;
-    background: linear-gradient(90deg, #00c8ff, #0066ff, #7b2fff);
-    margin-bottom: 2rem;
+/* ─── SIDEBAR ──────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: #2c1f14 !important;
+    border-right: none !important;
 }
 
 [data-testid="stSidebar"] .block-container {
-    padding: 0 1.5rem 2rem 1.5rem !important;
+    padding: 2rem 1.6rem !important;
 }
 
-/* Sidebar labels */
 [data-testid="stSidebar"] label,
-[data-testid="stSidebar"] .stSlider label,
-[data-testid="stSidebar"] p {
-    color: #7a95b8 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.72rem !important;
-    letter-spacing: 0.1em !important;
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] .stSlider label {
+    color: #b8a48a !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
+    font-weight: 500 !important;
+}
+
+[data-testid="stSidebar"] input[type="number"] {
+    color: #f5f0e8 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(184, 164, 138, 0.25) !important;
+    border-radius: 8px !important;
 }
 
 /* Slider track */
 [data-testid="stSidebar"] .stSlider > div > div > div > div {
-    background: linear-gradient(90deg, #00c8ff, #0066ff) !important;
+    background: linear-gradient(90deg, #c4622d, #8b6d38) !important;
 }
 [data-testid="stSidebar"] .stSlider > div > div > div > div > div {
-    background: #ffffff !important;
-    border: 2px solid #00c8ff !important;
-    box-shadow: 0 0 10px rgba(0,200,255,0.5) !important;
+    background: #f5f0e8 !important;
+    border: 2px solid #c4622d !important;
+    box-shadow: 0 2px 8px rgba(196, 98, 45, 0.4) !important;
 }
 
-/* Number input */
-[data-testid="stSidebar"] input[type="number"] {
-    background: #0d1929 !important;
-    border: 1px solid rgba(0, 200, 255, 0.25) !important;
-    border-radius: 6px !important;
-    color: #e2e8f0 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-}
-
-/* Divider */
 [data-testid="stSidebar"] hr {
-    border-color: rgba(0, 200, 255, 0.1) !important;
-    margin: 1.5rem 0 !important;
+    border-color: rgba(184, 164, 138, 0.2) !important;
+    margin: 1.4rem 0 !important;
 }
 
-/* Sidebar button */
 [data-testid="stSidebar"] .stButton button {
-    background: linear-gradient(135deg, #00c8ff 0%, #0066ff 100%) !important;
-    color: #ffffff !important;
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
+    background: linear-gradient(135deg, #c4622d 0%, #9e4e24 100%) !important;
+    color: #faf7f2 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 600 !important;
     font-size: 0.85rem !important;
-    letter-spacing: 0.12em !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     border: none !important;
     border-radius: 8px !important;
-    padding: 0.75rem 1.5rem !important;
+    padding: 0.8rem !important;
     width: 100% !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 0 20px rgba(0, 150, 255, 0.3) !important;
+    box-shadow: 0 4px 18px rgba(196, 98, 45, 0.35) !important;
+    transition: all 0.25s ease !important;
 }
 [data-testid="stSidebar"] .stButton button:hover {
-    box-shadow: 0 0 35px rgba(0, 150, 255, 0.55) !important;
+    box-shadow: 0 6px 24px rgba(196, 98, 45, 0.55) !important;
     transform: translateY(-1px) !important;
 }
 
-/* ─── METRIC CARDS ────────────────────────────────────────────────── */
+/* ─── METRIC CARDS ─────────────────────────────────────────────── */
 [data-testid="stMetric"] {
-    background: linear-gradient(145deg, #0d1929 0%, #0b1522 100%) !important;
-    border: 1px solid rgba(0, 200, 255, 0.14) !important;
-    border-radius: 12px !important;
-    padding: 1.4rem 1.6rem !important;
-    position: relative !important;
-    overflow: hidden !important;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+    background: #faf7f2 !important;
+    border: 1px solid rgba(139, 109, 56, 0.18) !important;
+    border-radius: 14px !important;
+    padding: 1.4rem 1.6rem 1.3rem !important;
+    box-shadow: 0 2px 16px rgba(44, 31, 20, 0.06), 0 1px 4px rgba(44,31,20,0.05) !important;
+    position: relative;
+    overflow: hidden;
 }
-[data-testid="stMetric"]:hover {
-    border-color: rgba(0, 200, 255, 0.4) !important;
-    box-shadow: 0 0 25px rgba(0, 150, 255, 0.1) !important;
-}
-[data-testid="stMetric"]::before {
+[data-testid="stMetric"]::after {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: linear-gradient(180deg, #00c8ff, #7b2fff);
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c4622d, #8b6d38, #c4a45a);
+    border-radius: 0 0 14px 14px;
 }
 
 [data-testid="stMetric"] label {
-    color: #4a7080 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.68rem !important;
-    letter-spacing: 0.12em !important;
+    color: #9a836a !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.09em !important;
     text-transform: uppercase !important;
+    font-weight: 500 !important;
 }
 [data-testid="stMetricValue"] {
-    color: #e2e8f0 !important;
-    font-family: 'Syne', sans-serif !important;
+    color: #2c1f14 !important;
+    font-family: 'Playfair Display', serif !important;
     font-size: 2rem !important;
-    font-weight: 800 !important;
+    font-weight: 700 !important;
 }
 
-/* ─── DIVIDER ─────────────────────────────────────────────────────── */
+/* ─── DIVIDER ──────────────────────────────────────────────────── */
 hr {
-    border-color: rgba(0, 200, 255, 0.1) !important;
+    border-color: rgba(139, 109, 56, 0.2) !important;
+    margin: 1.8rem 0 !important;
 }
 
-/* ─── INFO BOX ────────────────────────────────────────────────────── */
-[data-testid="stAlert"] {
-    background: rgba(0, 100, 200, 0.08) !important;
-    border: 1px solid rgba(0, 200, 255, 0.2) !important;
-    border-radius: 10px !important;
-    color: #7ab8d4 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.82rem !important;
-}
-
-/* ─── SPINNER ─────────────────────────────────────────────────────── */
-.stSpinner > div {
-    border-top-color: #00c8ff !important;
-}
-
-/* ─── SECTION LABELS ──────────────────────────────────────────────── */
+/* ─── SECTION HEADINGS ─────────────────────────────────────────── */
 h4 {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.7rem !important;
-    letter-spacing: 0.2em !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.18em !important;
     text-transform: uppercase !important;
-    color: #3a6080 !important;
-    margin-bottom: 1rem !important;
+    color: #b8a070 !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.1rem !important;
 }
 
-/* ─── DECISION CARDS ──────────────────────────────────────────────── */
-@keyframes card-in {
-    0% { opacity: 0; transform: translateY(30px) scale(0.96); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
+/* ─── STAT BARS ─────────────────────────────────────────────────── */
+.stat-row {
+    background: #faf7f2;
+    border: 1px solid rgba(139, 109, 56, 0.15);
+    border-radius: 12px;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 1px 6px rgba(44,31,20,0.04);
 }
-@keyframes pulse-glow-green {
-    0%, 100% { box-shadow: 0 0 40px rgba(0, 230, 120, 0.2), 0 20px 60px rgba(0,0,0,0.4); }
-    50% { box-shadow: 0 0 70px rgba(0, 230, 120, 0.4), 0 20px 60px rgba(0,0,0,0.4); }
-}
-@keyframes pulse-glow-red {
-    0%, 100% { box-shadow: 0 0 40px rgba(255, 60, 80, 0.2), 0 20px 60px rgba(0,0,0,0.4); }
-    50% { box-shadow: 0 0 70px rgba(255, 60, 80, 0.4), 0 20px 60px rgba(0,0,0,0.4); }
-}
-@keyframes scan-line {
-    0% { top: 0%; }
-    100% { top: 100%; }
-}
-
-.decision-card-pass {
-    background: linear-gradient(135deg, #011a0e 0%, #021f10 50%, #011810 100%);
-    border: 1px solid rgba(0, 230, 120, 0.35);
-    border-radius: 16px;
-    padding: 4rem 3rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: card-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-               pulse-glow-green 3s ease-in-out 0.6s infinite;
-}
-.decision-card-pass::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #00e678, #00ffaa, #00e678, transparent);
-}
-.decision-card-pass::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(0, 230, 120, 0.3), transparent);
-    animation: scan-line 3s linear 0.8s infinite;
-    pointer-events: none;
-}
-.decision-card-pass .verdict {
-    font-family: 'Syne', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #00e678;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0;
-    text-shadow: 0 0 40px rgba(0, 230, 120, 0.5);
-}
-.decision-card-pass .sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: rgba(0, 230, 120, 0.65);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-.decision-card-pass .desc {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem;
-    color: #4aad7a;
-    max-width: 500px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-.decision-card-fail {
-    background: linear-gradient(135deg, #1a0508 0%, #1f060a 50%, #180408 100%);
-    border: 1px solid rgba(255, 60, 80, 0.3);
-    border-radius: 16px;
-    padding: 4rem 3rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: card-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-               pulse-glow-red 3s ease-in-out 0.6s infinite;
-}
-.decision-card-fail::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ff3c50, #ff6b7a, #ff3c50, transparent);
-}
-.decision-card-fail::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 60, 80, 0.25), transparent);
-    animation: scan-line 3s linear 0.8s infinite;
-    pointer-events: none;
-}
-.decision-card-fail .verdict {
-    font-family: 'Syne', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #ff3c50;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0;
-    text-shadow: 0 0 40px rgba(255, 60, 80, 0.5);
-}
-.decision-card-fail .sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: rgba(255, 60, 80, 0.55);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-.decision-card-fail .desc {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem;
-    color: #a04555;
-    max-width: 500px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-/* ─── STAT BARS ───────────────────────────────────────────────────── */
-.stat-bar-wrap {
-    background: #0b1120;
-    border: 1px solid rgba(0,200,255,0.1);
-    border-radius: 10px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 0.8rem;
-}
-.stat-bar-label {
+.stat-row-top {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    align-items: baseline;
+    margin-bottom: 0.55rem;
 }
-.stat-bar-label span:first-child {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    color: #4a7080;
-    letter-spacing: 0.1em;
+.stat-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: #9a836a;
+    font-weight: 500;
 }
-.stat-bar-label span:last-child {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #a0c8e0;
+.stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2c1f14;
 }
-.stat-bar-track {
-    background: rgba(0,200,255,0.08);
-    border-radius: 4px;
-    height: 6px;
+.track {
+    background: rgba(139, 109, 56, 0.1);
+    border-radius: 99px;
+    height: 7px;
     overflow: hidden;
 }
-.stat-bar-fill {
+.fill {
     height: 100%;
-    border-radius: 4px;
-    background: linear-gradient(90deg, #00c8ff, #0066ff);
-    box-shadow: 0 0 10px rgba(0,150,255,0.4);
+    border-radius: 99px;
+}
+
+/* ─── IDLE STATE ───────────────────────────────────────────────── */
+.idle-card {
+    background: #faf7f2;
+    border: 1px solid rgba(139, 109, 56, 0.2);
+    border-radius: 14px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(44,31,20,0.05);
+}
+.idle-card .idle-icon { font-size: 2.8rem; margin-bottom: 0.8rem; }
+.idle-card .idle-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c1f14;
+    margin-bottom: 0.5rem;
+}
+.idle-card .idle-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: #9a836a;
+    line-height: 1.65;
+}
+
+/* ─── RESULT CARDS ──────────────────────────────────────────────── */
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.result-pass {
+    background: linear-gradient(145deg, #f0f7ee 0%, #e8f5e3 100%);
+    border: 1px solid rgba(88, 150, 70, 0.3);
+    border-radius: 16px;
+    padding: 3.5rem 3rem;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(88, 150, 70, 0.12), 0 2px 10px rgba(44,31,20,0.05);
+    animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    overflow: hidden;
+}
+.result-pass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #589646, #82c36d, #589646);
+}
+.result-pass .badge {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #589646;
+    background: rgba(88,150,70,0.12);
+    border: 1px solid rgba(88,150,70,0.25);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+}
+.result-pass .verdict {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #3a6b2a;
+    margin: 0.3rem 0 1rem;
+}
+.result-pass .desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: #5a7a52;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.result-fail {
+    background: linear-gradient(145deg, #faf0ee 0%, #f7e8e5 100%);
+    border: 1px solid rgba(196, 80, 60, 0.25);
+    border-radius: 16px;
+    padding: 3.5rem 3rem;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(196, 80, 60, 0.1), 0 2px 10px rgba(44,31,20,0.05);
+    animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    overflow: hidden;
+}
+.result-fail::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #c4503c, #e07060, #c4503c);
+}
+.result-fail .badge {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c4503c;
+    background: rgba(196,80,60,0.1);
+    border: 1px solid rgba(196,80,60,0.22);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+}
+.result-fail .verdict {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #963028;
+    margin: 0.3rem 0 1rem;
+}
+.result-fail .desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: #8a5048;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -354,7 +320,6 @@ def load_model():
     return None
 
 model = load_model()
-
 if not model:
     st.error(f"Model file `{model_path}` not found. Place it in the same directory as this script.")
     st.stop()
@@ -362,12 +327,15 @@ if not model:
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div style="padding: 1.5rem 0 0.5rem 0;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; 
-                    letter-spacing:0.2em; color:#2a4060; text-transform:uppercase; 
-                    margin-bottom:0.3rem;">TalentIQ · v2.4</div>
-        <div style="font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; 
-                    color:#e2e8f0;">Candidate Profile</div>
+    <div style="padding-bottom:0.5rem;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:0.65rem; color:#7a6050;
+                    letter-spacing:0.16em; text-transform:uppercase; margin-bottom:0.35rem;">
+            Meridian HR Suite
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700;
+                    color:#f5f0e8; line-height:1.3;">
+            Candidate<br>Evaluation
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -379,123 +347,95 @@ with st.sidebar:
     certifications   = st.number_input("Certifications", min_value=0, max_value=20, value=2)
 
     st.divider()
-    analyze_btn = st.button("Run Analysis", type="primary", use_container_width=True)
+    analyze_btn = st.button("Run Evaluation", type="primary", use_container_width=True)
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
-# Header
 st.markdown("""
-<div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.3rem;">
-    <span style="font-family:'Syne',sans-serif; font-size:2.4rem; font-weight:800; 
-                 color:#e2e8f0; letter-spacing:-0.01em;">HR Intelligence</span>
-    <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; 
-                 color:#2a6080; letter-spacing:0.18em; text-transform:uppercase; 
-                 background:rgba(0,200,255,0.07); border:1px solid rgba(0,200,255,0.15); 
-                 border-radius:4px; padding:3px 10px;">AI-Powered · Random Forest</span>
-</div>
-<div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:#2a5070; 
-             margin-bottom:2.5rem; letter-spacing:0.05em;">
-    Evaluate candidate fitness across four performance dimensions in real time.
+<div style="margin-bottom:2rem;">
+    <div style="font-family:'DM Sans',sans-serif; font-size:0.68rem; color:#b8a070;
+                letter-spacing:0.16em; text-transform:uppercase; font-weight:600;
+                margin-bottom:0.4rem;">AI · Hiring Intelligence</div>
+    <div style="font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:700;
+                color:#2c1f14; line-height:1.2; margin-bottom:0.5rem;">
+        HR Decision Dashboard
+    </div>
+    <div style="font-family:'DM Sans',sans-serif; font-size:0.95rem; color:#9a836a;
+                font-weight:300; max-width:560px; line-height:1.65;">
+        Enter the candidate's details in the sidebar and run an evaluation
+        to receive an AI-generated hiring recommendation.
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Metric cards
-st.write("#### ◈ Candidate Snapshot")
+st.write("#### Candidate Snapshot")
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Experience", f"{years_experience} yrs")
-c2.metric("Technical", f"{technical_score} / 100")
-c3.metric("Interview", f"{interview_score} / 10")
-c4.metric("Certs", f"{certifications}")
+c2.metric("Technical",  f"{technical_score} / 100")
+c3.metric("Interview",  f"{interview_score} / 10")
+c4.metric("Certifications", str(certifications))
 
 st.divider()
 
-# Visual stat bars
-st.write("#### ◈ Signal Breakdown")
-
-def pct(val, mx): return int(val / mx * 100)
-
-st.markdown(f"""
-<div class="stat-bar-wrap">
-    <div class="stat-bar-label">
-        <span>Experience</span><span>{years_experience} / 50 yrs</span>
+st.write("#### Score Breakdown")
+bars = [
+    ("Years of Experience", years_experience, 50,  "#c4622d", f"{years_experience} / 50 yrs"),
+    ("Technical Score",     technical_score,  100, "#8b6d38", f"{technical_score} / 100"),
+    ("Interview Score",     interview_score,  10,  "#c4a45a", f"{interview_score} / 10"),
+    ("Certifications",      certifications,   20,  "#7a9660", f"{certifications} / 20"),
+]
+for label, val, mx, color, display in bars:
+    pct = int(val / mx * 100)
+    st.markdown(f"""
+    <div class="stat-row">
+        <div class="stat-row-top">
+            <span class="stat-label">{label}</span>
+            <span class="stat-value">{display}</span>
+        </div>
+        <div class="track">
+            <div class="fill" style="width:{pct}%; background:{color};"></div>
+        </div>
     </div>
-    <div class="stat-bar-track">
-        <div class="stat-bar-fill" style="width:{pct(years_experience,50)}%; 
-             background:linear-gradient(90deg,#00c8ff,#0055dd);"></div>
-    </div>
-</div>
-<div class="stat-bar-wrap">
-    <div class="stat-bar-label">
-        <span>Technical Score</span><span>{technical_score} / 100</span>
-    </div>
-    <div class="stat-bar-track">
-        <div class="stat-bar-fill" style="width:{pct(technical_score,100)}%; 
-             background:linear-gradient(90deg,#7b2fff,#c44dff);"></div>
-    </div>
-</div>
-<div class="stat-bar-wrap">
-    <div class="stat-bar-label">
-        <span>Interview Score</span><span>{interview_score} / 10</span>
-    </div>
-    <div class="stat-bar-track">
-        <div class="stat-bar-fill" style="width:{pct(interview_score,10)}%; 
-             background:linear-gradient(90deg,#00c8ff,#00e6aa);"></div>
-    </div>
-</div>
-<div class="stat-bar-wrap">
-    <div class="stat-bar-label">
-        <span>Certifications</span><span>{certifications} / 20</span>
-    </div>
-    <div class="stat-bar-track">
-        <div class="stat-bar-fill" style="width:{pct(certifications,20)}%; 
-             background:linear-gradient(90deg,#ffaa00,#ff6600);"></div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 st.divider()
-
-# ─── RESULT ───────────────────────────────────────────────────────────────────
-st.write("#### ◈ AI Verdict")
+st.write("#### Hiring Recommendation")
 
 if analyze_btn:
-    with st.spinner("Processing neural inference..."):
+    with st.spinner("Analysing candidate profile..."):
         input_data = np.array([[years_experience, technical_score, interview_score, certifications]])
         prediction = model.predict(input_data)
 
     if prediction[0] == 1:
         st.markdown("""
-        <div class="decision-card-pass">
-            <div class="sub">◈ Candidate Assessment Complete</div>
-            <div class="verdict">✦ Shortlisted</div>
-            <div style="height:1.2rem;"></div>
+        <div class="result-pass">
+            <div class="badge">✓ Evaluation Complete</div>
+            <div class="verdict">Shortlisted</div>
             <div class="desc">
-                Outstanding profile. This candidate clears all performance thresholds
-                and is strongly recommended for the next evaluation round.
+                This candidate meets and exceeds the required thresholds. They are
+                recommended to proceed to the next stage of the hiring process.
             </div>
         </div>
         """, unsafe_allow_html=True)
         st.balloons()
     else:
         st.markdown("""
-        <div class="decision-card-fail">
-            <div class="sub">◈ Candidate Assessment Complete</div>
-            <div class="verdict">✕ Rejected</div>
-            <div style="height:1.2rem;"></div>
+        <div class="result-fail">
+            <div class="badge">✕ Evaluation Complete</div>
+            <div class="verdict">Not Progressing</div>
             <div class="desc">
-                Requirements not met. This candidate falls below the minimum
-                technical or interview thresholds at this time.
+                This candidate does not currently meet the minimum requirements.
+                Consider re-evaluating after further development or experience.
             </div>
         </div>
         """, unsafe_allow_html=True)
 else:
     st.markdown("""
-    <div style="background:rgba(0,100,200,0.05); border:1px dashed rgba(0,200,255,0.18); 
-                border-radius:12px; padding:2.5rem; text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; 
-                    color:#2a6080; letter-spacing:0.15em; text-transform:uppercase; 
-                    margin-bottom:0.6rem;">Awaiting Input</div>
-        <div style="font-family:'Syne',sans-serif; font-size:1.05rem; color:#3a7090;">
-            Configure the candidate profile in the sidebar,<br>then click <b style="color:#00c8ff;">Run Analysis</b> to generate a verdict.
+    <div class="idle-card">
+        <div class="idle-icon">🌿</div>
+        <div class="idle-title">Ready to Evaluate</div>
+        <div class="idle-sub">
+            Adjust the candidate's details in the sidebar panel,<br>
+            then click <strong>Run Evaluation</strong> to generate a recommendation.
         </div>
     </div>
     """, unsafe_allow_html=True)
