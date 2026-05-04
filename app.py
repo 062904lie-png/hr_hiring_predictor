@@ -3,361 +3,131 @@ import joblib
 import numpy as np
 import os
 
-# --- To run this app ---
-# Open Terminal (Ctrl + `) and type: streamlit run app.py
-# -----------------------
+# --- Visual Studio Tip ---
+# To run this in VS Code:
+# 1. Open the Terminal (Ctrl + `)
+# 2. Type: streamlit run app.py
+# -------------------------
 
-st.set_page_config(
-    page_title="TalentIQ · HR Decision Engine",
-    page_icon="🎯",
-    layout="centered"
-)
+# Page configuration - changed to "wide" for a dashboard feel
+st.set_page_config(page_title="HR Decision AI", page_icon="💼", layout="wide")
 
-# ── Custom CSS ──────────────────────────────────────────────────────────────
+# Custom CSS for a modern enterprise dashboard look
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+    /* Subtle background color for the main area */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    
+    /* Styling the metric cards */
+    [data-testid="stMetric"] {
+        background-color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 5px solid #3498db;
+    }
+    
+    /* Custom classes for the final decision cards */
+    .decision-card-pass {
+        background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        padding: 35px;
+        border-radius: 15px;
+        text-align: center;
+        color: #1a5619;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border: 2px solid #b8e994;
+    }
+    
+    .decision-card-fail {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+        padding: 35px;
+        border-radius: 15px;
+        text-align: center;
+        color: #5c1010;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border: 2px solid #ffb8b8;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-<style>
-/* ── Root palette ── */
-:root {
-    --navy:    #0d1b2a;
-    --navy-mid:#132336;
-    --slate:   #1e3a5f;
-    --gold:    #c9a84c;
-    --gold-lt: #e8c97e;
-    --text:    #e8edf3;
-    --muted:   #7b91a8;
-    --border:  rgba(201,168,76,0.25);
-    --glass:   rgba(19,35,54,0.85);
-    --success-bg: #0a2e1a;
-    --success-border: #2ecc71;
-    --success-text: #a8f0c6;
-    --reject-bg: #2e0a0a;
-    --reject-border: #e74c3c;
-    --reject-text: #f0a8a8;
-}
-
-/* ── Global reset ── */
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif !important;
-    background-color: var(--navy) !important;
-    color: var(--text) !important;
-}
-
-.stApp {
-    background: var(--navy) !important;
-}
-
-/* Subtle grid texture overlay */
-.stApp::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* ── Block container ── */
-.block-container {
-    max-width: 760px !important;
-    padding: 2.5rem 2rem !important;
-    position: relative;
-    z-index: 1;
-}
-
-/* ── Header ── */
-.header-wrap {
-    text-align: center;
-    margin-bottom: 2.5rem;
-}
-
-.brand-label {
-    display: inline-block;
-    letter-spacing: 0.35em;
-    font-size: 0.68rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--gold);
-    background: rgba(201,168,76,0.1);
-    border: 1px solid var(--border);
-    padding: 4px 14px;
-    border-radius: 100px;
-    margin-bottom: 1.1rem;
-}
-
-.main-title {
-    font-family: 'DM Serif Display', serif !important;
-    font-size: 2.6rem !important;
-    font-weight: 400 !important;
-    color: var(--text) !important;
-    line-height: 1.15 !important;
-    margin: 0 0 0.5rem !important;
-}
-
-.main-title span {
-    color: var(--gold);
-}
-
-.subtitle {
-    color: var(--muted);
-    font-size: 0.95rem;
-    font-weight: 300;
-}
-
-/* ── Divider ── */
-hr {
-    border: none !important;
-    border-top: 1px solid var(--border) !important;
-    margin: 1.8rem 0 !important;
-}
-
-/* ── Section heading ── */
-.section-heading {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.section-heading::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-}
-
-/* ── Number inputs ── */
-div[data-testid="stNumberInput"] label,
-div[data-testid="stNumberInput"] p {
-    font-size: 0.78rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-    color: var(--muted) !important;
-    margin-bottom: 6px !important;
-}
-
-div[data-testid="stNumberInput"] input {
-    background: var(--navy-mid) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    color: var(--text) !important;
-    font-size: 1.15rem !important;
-    font-weight: 500 !important;
-    padding: 10px 14px !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-div[data-testid="stNumberInput"] input:focus {
-    border-color: var(--gold) !important;
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.15) !important;
-}
-
-/* Hide number input arrow buttons */
-div[data-testid="stNumberInput"] button {
-    background: transparent !important;
-    border: none !important;
-    color: var(--muted) !important;
-}
-
-/* ── Metric cards ── */
-.metric-card {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    backdrop-filter: blur(8px);
-    position: relative;
-    overflow: hidden;
-}
-
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-/* ── Primary button ── */
-div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #b8922d 0%, var(--gold) 50%, var(--gold-lt) 100%) !important;
-    color: var(--navy) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-    height: 3.2em !important;
-    width: 100% !important;
-    border-radius: 10px !important;
-    border: none !important;
-    transition: all 0.25s ease !important;
-    box-shadow: 0 4px 20px rgba(201,168,76,0.3) !important;
-}
-
-div.stButton > button[kind="primary"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 28px rgba(201,168,76,0.45) !important;
-    filter: brightness(1.06) !important;
-}
-
-div.stButton > button[kind="primary"]:active {
-    transform: translateY(0) !important;
-}
-
-/* ── Result panels ── */
-.result-panel {
-    border-radius: 12px;
-    padding: 28px 28px 24px;
-    border-left: 4px solid;
-    position: relative;
-    overflow: hidden;
-    animation: slideUp 0.4s ease;
-}
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.result-panel.shortlist {
-    background: var(--success-bg);
-    border-color: var(--success-border);
-}
-
-.result-panel.reject {
-    background: var(--reject-bg);
-    border-color: var(--reject-border);
-}
-
-.result-verdict {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.7rem;
-    margin: 0 0 6px;
-}
-
-.result-verdict.shortlist { color: var(--success-text); }
-.result-verdict.reject    { color: var(--reject-text); }
-
-.result-sub {
-    font-size: 0.88rem;
-    font-weight: 400;
-    opacity: 0.75;
-}
-
-.result-sub.shortlist { color: var(--success-text); }
-.result-sub.reject    { color: var(--reject-text); }
-
-/* ── Footer ── */
-.footer {
-    text-align: center;
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 2.5rem;
-    letter-spacing: 0.05em;
-    opacity: 0.6;
-}
-
-/* ── Streamlit chrome cleanup ── */
-#MainMenu, footer, header { visibility: hidden !important; }
-[data-testid="stToolbar"] { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# ── Load model ───────────────────────────────────────────────────────────────
+# Load the trained Random Forest model efficiently
 model_path = "hr.pkl"
 
-if os.path.exists(model_path):
-    model = joblib.load(model_path)
-else:
-    st.error(f"Model file '{model_path}' not found. Place it in the same directory as this script.")
+@st.cache_resource
+def load_model():
+    if os.path.exists(model_path):
+        return joblib.load(model_path)
+    return None
+
+model = load_model()
+
+if not model:
+    st.error(f"Error: '{model_path}' not found. Please ensure the model file is in the same folder as this script.")
     st.stop()
 
-# ── Header ───────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="header-wrap">
-    <div class="brand-label">TalentIQ · HR Decision Engine</div>
-    <h1 class="main-title">Candidate <span>Evaluation</span></h1>
-    <p class="subtitle">Enter candidate profile data below to generate an AI-assisted hiring recommendation.</p>
-</div>
-""", unsafe_allow_html=True)
+# ==========================================
+# SIDEBAR: Data Entry
+# ==========================================
+with st.sidebar:
+    st.title("⚙️ Candidate Entry")
+    st.write("Adjust the sliders below to evaluate a new candidate.")
+    st.divider()
+    
+    years_experience = st.slider("Years of Experience", min_value=0, max_value=50, value=5)
+    technical_score = st.slider("Technical Test Score (0-100)", min_value=0, max_value=100, value=85)
+    interview_score = st.slider("Interview Score (0-10)", min_value=0, max_value=10, value=8)
+    certifications = st.number_input("Certifications Count", min_value=0, max_value=20, value=2)
+    
+    st.divider()
+    analyze_btn = st.button("Analyze Candidate", type="primary", use_container_width=True)
 
-st.markdown("<hr>", unsafe_allow_html=True)
+# ==========================================
+# MAIN PAGE: Dashboard & Results
+# ==========================================
+st.title("💼 HR Hiring Decision Dashboard")
+st.markdown("Review the candidate's profile metrics and the AI-generated hiring recommendation.")
+st.write("")
 
-# ── Input form ───────────────────────────────────────────────────────────────
-st.markdown('<div class="section-heading">Candidate Profile</div>', unsafe_allow_html=True)
+# Candidate Profile Metrics
+st.write("#### Candidate Profile")
+col1, col2, col3, col4 = st.columns(4)
 
-col1, col2 = st.columns(2, gap="medium")
+col1.metric("Experience", f"{years_experience} Years")
+col2.metric("Technical Score", f"{technical_score} / 100")
+col3.metric("Interview Score", f"{interview_score} / 10")
+col4.metric("Certifications", f"{certifications} Total")
 
-with col1:
-    years_experience = st.number_input(
-        "Years of Experience",
-        min_value=0, max_value=50, value=5,
-        help="Total years of relevant professional experience"
-    )
-    interview_score = st.number_input(
-        "Interview Score (0 – 10)",
-        min_value=0, max_value=10, value=8,
-        help="Score assigned by the interview panel"
-    )
+st.divider()
 
-with col2:
-    technical_score = st.number_input(
-        "Technical Test Score (0 – 100)",
-        min_value=0, max_value=100, value=85,
-        help="Result from standardized technical assessment"
-    )
-    certifications = st.number_input(
-        "Certifications Count",
-        min_value=0, max_value=20, value=2,
-        help="Number of relevant professional certifications"
-    )
-
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# ── Predict ──────────────────────────────────────────────────────────────────
-if st.button("Generate Hiring Decision", type="primary", use_container_width=True):
-
-    input_data = np.array([[years_experience, technical_score, interview_score, certifications]])
-    prediction = model.predict(input_data)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    if prediction[0] == 1:
-        st.markdown("""
-        <div class="result-panel shortlist">
-            <div class="result-verdict shortlist">✦ Recommended for Shortlist</div>
-            <div class="result-sub shortlist">
-                This candidate meets or exceeds the required performance thresholds.
-                Proceed to the next stage of the hiring process.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.balloons()
-    else:
-        st.markdown("""
-        <div class="result-panel reject">
-            <div class="result-verdict reject">✕ Not Recommended</div>
-            <div class="result-sub reject">
-                This candidate does not currently meet the minimum qualification criteria.
-                Consider re-evaluation or alternative roles.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-# ── Footer ───────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="footer">
-    Powered by a Random Forest classifier &nbsp;·&nbsp; For internal HR use only
-</div>
-""", unsafe_allow_html=True)
+# Results Section
+if analyze_btn:
+    st.write("#### AI Recommendation")
+    
+    with st.spinner("Processing candidate data through the AI model..."):
+        # Create input array matching the exact feature order
+        input_data = np.array([[years_experience, technical_score, interview_score, certifications]])
+        
+        # Make the prediction
+        prediction = model.predict(input_data)
+        
+        # Display customized decision cards
+        if prediction[0] == 1:
+            st.markdown("""
+                <div class="decision-card-pass">
+                    <h1 style="margin:0; font-size: 3em;">✅ SHORTLIST</h1>
+                    <p style="font-size: 1.3em; margin-top: 10px;"><b>Outstanding Profile.</b> This candidate exceeds performance thresholds and is highly recommended for the next round.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            st.balloons()
+        else:
+            st.markdown("""
+                <div class="decision-card-fail">
+                    <h1 style="margin:0; font-size: 3em;">❌ REJECT</h1>
+                    <p style="font-size: 1.3em; margin-top: 10px;"><b>Requirements Not Met.</b> This candidate currently falls below the required technical or interview thresholds.</p>
+                </div>
+            """, unsafe_allow_html=True)
+else:
+    # Default state before clicking the button
+    st.info("👈 Please adjust the candidate details in the sidebar menu and click **'Analyze Candidate'** to generate a recommendation.")
