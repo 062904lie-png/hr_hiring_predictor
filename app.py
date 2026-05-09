@@ -31,314 +31,154 @@ st.markdown("""
     --glass:   rgba(19,35,54,0.85);
     --success-bg: #0a2e1a;
     --success-border: #2ecc71;
-    --success-text: #a8f0c6;
-    --reject-bg: #2e0a0a;
-    --reject-border: #e74c3c;
-    --reject-text: #f0a8a8;
+    --fail-bg: #3a0d14;
+    --fail-border: #e74c3c;
 }
 
-/* ── Global reset ── */
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif !important;
-    background-color: var(--navy) !important;
-    color: var(--text) !important;
-}
-
+/* Global Background */
 .stApp {
-    background: var(--navy) !important;
+    background-color: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
 }
 
-/* Subtle grid texture overlay */
-.stApp::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* ── Block container ── */
-.block-container {
-    max-width: 760px !important;
-    padding: 2.5rem 2rem !important;
-    position: relative;
-    z-index: 1;
-}
-
-/* ── Header ── */
-.header-wrap {
-    text-align: center;
-    margin-bottom: 2.5rem;
-}
-
-.brand-label {
-    display: inline-block;
-    letter-spacing: 0.35em;
-    font-size: 0.68rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--gold);
-    background: rgba(201,168,76,0.1);
-    border: 1px solid var(--border);
-    padding: 4px 14px;
-    border-radius: 100px;
-    margin-bottom: 1.1rem;
-}
-
-.main-title {
+/* Headers */
+h1, h2, h3 {
     font-family: 'DM Serif Display', serif !important;
-    font-size: 2.6rem !important;
-    font-weight: 400 !important;
+    color: var(--gold-lt) !important;
+}
+
+/* Form Elements Styling */
+.stNumberInput > div > div > input, .stSelectbox > div > div > div {
+    background-color: var(--navy-mid) !important;
     color: var(--text) !important;
-    line-height: 1.15 !important;
-    margin: 0 0 0.5rem !important;
+    border: 1px solid var(--slate) !important;
 }
 
-.main-title span {
-    color: var(--gold);
-}
-
-.subtitle {
-    color: var(--muted);
-    font-size: 0.95rem;
-    font-weight: 300;
-}
-
-/* ── Divider ── */
-hr {
-    border: none !important;
-    border-top: 1px solid var(--border) !important;
-    margin: 1.8rem 0 !important;
-}
-
-/* ── Section heading ── */
-.section-heading {
-    font-size: 0.72rem;
+/* Primary Button */
+div.stButton > button:first-child {
+    background-color: var(--gold);
+    color: var(--navy);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 1.1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+div.stButton > button:first-child:hover {
+    background-color: var(--gold-lt);
+    box-shadow: 0 4px 12px rgba(201,168,76,0.3);
 }
 
-.section-heading::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-}
-
-/* ── Number inputs ── */
-div[data-testid="stNumberInput"] label,
-div[data-testid="stNumberInput"] p {
-    font-size: 0.78rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-    color: var(--muted) !important;
-    margin-bottom: 6px !important;
-}
-
-div[data-testid="stNumberInput"] input {
-    background: var(--navy-mid) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    color: var(--text) !important;
-    font-size: 1.15rem !important;
-    font-weight: 500 !important;
-    padding: 10px 14px !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-div[data-testid="stNumberInput"] input:focus {
-    border-color: var(--gold) !important;
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.15) !important;
-}
-
-/* Hide number input arrow buttons */
-div[data-testid="stNumberInput"] button {
-    background: transparent !important;
-    border: none !important;
-    color: var(--muted) !important;
-}
-
-/* ── Metric cards ── */
-.metric-card {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    backdrop-filter: blur(8px);
-    position: relative;
-    overflow: hidden;
-}
-
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-/* ── Primary button ── */
-div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #b8922d 0%, var(--gold) 50%, var(--gold-lt) 100%) !important;
-    color: var(--navy) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-    height: 3.2em !important;
-    width: 100% !important;
-    border-radius: 10px !important;
-    border: none !important;
-    transition: all 0.25s ease !important;
-    box-shadow: 0 4px 20px rgba(201,168,76,0.3) !important;
-}
-
-div.stButton > button[kind="primary"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 28px rgba(201,168,76,0.45) !important;
-    filter: brightness(1.06) !important;
-}
-
-div.stButton > button[kind="primary"]:active {
-    transform: translateY(0) !important;
-}
-
-/* ── Result panels ── */
+/* Result Panels */
 .result-panel {
-    border-radius: 12px;
-    padding: 28px 28px 24px;
-    border-left: 4px solid;
-    position: relative;
-    overflow: hidden;
-    animation: slideUp 0.4s ease;
+    padding: 24px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 20px;
+    border-left: 6px solid;
 }
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
 .result-panel.shortlist {
-    background: var(--success-bg);
+    background-color: var(--success-bg);
     border-color: var(--success-border);
 }
-
 .result-panel.reject {
-    background: var(--reject-bg);
-    border-color: var(--reject-border);
+    background-color: var(--fail-bg);
+    border-color: var(--fail-border);
 }
 
 .result-verdict {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.7rem;
-    margin: 0 0 6px;
+    font-size: 2rem;
+    margin-bottom: 8px;
 }
-
-.result-verdict.shortlist { color: var(--success-text); }
-.result-verdict.reject    { color: var(--reject-text); }
+.result-verdict.shortlist { color: var(--success-border); }
+.result-verdict.reject { color: var(--fail-border); }
 
 .result-sub {
-    font-size: 0.88rem;
-    font-weight: 400;
-    opacity: 0.75;
+    font-size: 1.05rem;
+    color: var(--text);
 }
 
-.result-sub.shortlist { color: var(--success-text); }
-.result-sub.reject    { color: var(--reject-text); }
-
-/* ── Footer ── */
+/* Footer */
 .footer {
     text-align: center;
-    font-size: 0.72rem;
     color: var(--muted);
-    margin-top: 2.5rem;
-    letter-spacing: 0.05em;
-    opacity: 0.6;
+    font-size: 0.85rem;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--slate);
 }
-
-/* ── Streamlit chrome cleanup ── */
-#MainMenu, footer, header { visibility: hidden !important; }
-[data-testid="stToolbar"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Load model ───────────────────────────────────────────────────────────────
-model_path = "hr.pkl"
+# ── Header ──────────────────────────────────────────────────────────────────
+st.markdown("<h1>🎯 TalentIQ Decision Engine</h1>", unsafe_allow_html=True)
+st.write("Advanced applicant screening system utilizing the 10-factor candidate framework.")
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ── Load Model ──────────────────────────────────────────────────────────────
+model_path = "recruitment_model.pkl"
 
 if os.path.exists(model_path):
     model = joblib.load(model_path)
 else:
-    st.error(f"Model file '{model_path}' not found. Place it in the same directory as this script.")
+    st.error(f"Error: '{model_path}' not found. Please ensure the new model is in the same folder.")
     st.stop()
 
-# ── Header ───────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="header-wrap">
-    <div class="brand-label">TalentIQ · HR Decision Engine</div>
-    <h1 class="main-title">Candidate <span>Evaluation</span></h1>
-    <p class="subtitle">Enter candidate profile data below to generate an AI-assisted hiring recommendation.</p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# ── Input form ───────────────────────────────────────────────────────────────
-st.markdown('<div class="section-heading">Candidate Profile</div>', unsafe_allow_html=True)
-
-col1, col2 = st.columns(2, gap="medium")
-
+# ── Data Input ──────────────────────────────────────────────────────────────
+st.markdown("### Candidate Demographics")
+col1, col2, col3 = st.columns(3)
 with col1:
-    years_experience = st.number_input(
-        "Years of Experience",
-        min_value=0, max_value=50, value=5,
-        help="Total years of relevant professional experience"
-    )
-    interview_score = st.number_input(
-        "Interview Score (0 – 10)",
-        min_value=0, max_value=10, value=8,
-        help="Score assigned by the interview panel"
-    )
-
+    age = st.number_input("Age", min_value=18, max_value=70, value=28)
 with col2:
-    technical_score = st.number_input(
-        "Technical Test Score (0 – 100)",
-        min_value=0, max_value=100, value=85,
-        help="Result from standardized technical assessment"
-    )
-    certifications = st.number_input(
-        "Certifications Count",
-        min_value=0, max_value=20, value=2,
-        help="Number of relevant professional certifications"
-    )
+    gender = st.selectbox("Gender", options=[0, 1], format_func=lambda x: "1 (Male)" if x == 1 else "0 (Female)")
+with col3:
+    education = st.selectbox("Education Level", options=[1, 2, 3, 4], help="1: High School, 2: Bachelor's, 3: Master's, 4: PhD")
 
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown("### Professional Background")
+col4, col5, col6 = st.columns(3)
+with col4:
+    experience = st.number_input("Experience (Years)", min_value=0, max_value=40, value=5)
+with col5:
+    companies = st.number_input("Previous Companies", min_value=0, max_value=20, value=2)
+with col6:
+    distance = st.number_input("Distance from Company", min_value=0.0, max_value=200.0, value=15.5, step=1.0)
+
+st.markdown("### Evaluation Scores")
+col7, col8, col9 = st.columns(3)
+with col7:
+    interview_score = st.slider("Interview Score", min_value=0, max_value=100, value=75)
+with col8:
+    skill_score = st.slider("Skill Score", min_value=0, max_value=100, value=80)
+with col9:
+    personality_score = st.slider("Personality Score", min_value=0, max_value=100, value=85)
+
+st.markdown("### Recruitment Strategy")
+strategy = st.selectbox("Strategy Method", options=[1, 2, 3], help="Categorical variable representing the recruitment channel.")
 
 # ── Predict ──────────────────────────────────────────────────────────────────
+st.markdown("<br>", unsafe_allow_html=True)
 if st.button("Generate Hiring Decision", type="primary", use_container_width=True):
 
-    input_data = np.array([[years_experience, technical_score, interview_score, certifications]])
+    # Create input array matching the exact feature order of our advanced dataset:
+    # Age, Gender, EducationLevel, ExperienceYears, PreviousCompanies, 
+    # DistanceFromCompany, InterviewScore, SkillScore, PersonalityScore, RecruitmentStrategy
+    input_data = np.array([[
+        age, gender, education, experience, companies, 
+        distance, interview_score, skill_score, personality_score, strategy
+    ]])
+    
     prediction = model.predict(input_data)
-
-    st.markdown("<br>", unsafe_allow_html=True)
 
     if prediction[0] == 1:
         st.markdown("""
         <div class="result-panel shortlist">
             <div class="result-verdict shortlist">✦ Recommended for Shortlist</div>
             <div class="result-sub shortlist">
-                This candidate meets or exceeds the required performance thresholds.
+                This candidate meets or exceeds the comprehensive performance thresholds.
                 Proceed to the next stage of the hiring process.
             </div>
         </div>
@@ -349,7 +189,7 @@ if st.button("Generate Hiring Decision", type="primary", use_container_width=Tru
         <div class="result-panel reject">
             <div class="result-verdict reject">✕ Not Recommended</div>
             <div class="result-sub reject">
-                This candidate does not currently meet the minimum qualification criteria.
+                This candidate does not currently meet the minimum qualification criteria across all 10 factors.
                 Consider re-evaluation or alternative roles.
             </div>
         </div>
