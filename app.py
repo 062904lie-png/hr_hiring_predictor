@@ -132,20 +132,20 @@ else:
 st.markdown("### Candidate Demographics")
 col1, col2, col3 = st.columns(3)
 with col1:
-    age = st.number_input("Age", min_value=18, max_value=70, value=28)
+    age = st.number_input("Age", min_value=20, max_value=50, value=28)
 with col2:
-    gender = st.selectbox("Gender", options=[0, 1], format_func=lambda x: "1 (Male)" if x == 1 else "0 (Female)")
+    gender = st.selectbox("Gender", options=[0, 1], format_func=lambda x: "0 (Male)" if x == 0 else "1 (Female)")
 with col3:
-    education = st.selectbox("Education Level", options=[1, 2, 3, 4], help="1: High School, 2: Bachelor's, 3: Master's, 4: PhD")
+    education = st.selectbox("Education Level", options=[1, 2, 3, 4], help="1: Bachelor's (Type 1), 2: Bachelor's (Type 2), 3: Master's, 4: PhD")
 
 st.markdown("### Professional Background")
 col4, col5, col6 = st.columns(3)
 with col4:
-    experience = st.number_input("Experience (Years)", min_value=0, max_value=40, value=5)
+    experience = st.number_input("Experience (Years)", min_value=0, max_value=15, value=5)
 with col5:
-    companies = st.number_input("Previous Companies", min_value=0, max_value=20, value=2)
+    companies = st.number_input("Previous Companies", min_value=1, max_value=5, value=2)
 with col6:
-    distance = st.number_input("Distance from Company", min_value=0.0, max_value=200.0, value=15.5, step=1.0)
+    distance = st.number_input("Distance from Company", min_value=1.0, max_value=50.0, value=15.5, step=1.0)
 
 st.markdown("### Evaluation Scores")
 col7, col8, col9 = st.columns(3)
@@ -157,7 +157,7 @@ with col9:
     personality_score = st.slider("Personality Score", min_value=0, max_value=100, value=85)
 
 st.markdown("### Recruitment Strategy")
-strategy = st.selectbox("Strategy Method", options=[1, 2, 3], help="Categorical variable representing the recruitment channel.")
+strategy = st.selectbox("Strategy Method", options=[1, 2, 3], help="1: Aggressive, 2: Moderate, 3: Conservative")
 
 # ── Predict ──────────────────────────────────────────────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
