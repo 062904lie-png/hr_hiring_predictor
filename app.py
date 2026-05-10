@@ -145,7 +145,7 @@ with col4:
 with col5:
     companies = st.number_input("Previous Companies", min_value=1, max_value=5, value=2)
 with col6:
-    distance = st.number_input("Distance from Company", min_value=1.0, max_value=50.0, value=15.5, step=1.0)
+    distance = st.number_input("Distance from Company in km.", min_value=1.0, max_value=50.0, value=15.5, step=1.0)
 
 st.markdown("### Evaluation Scores")
 col7, col8, col9 = st.columns(3)
